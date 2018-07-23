@@ -9,7 +9,7 @@ class decompress():
     (encode method of the) compress class of this package. Only .txt format files will be decompressed
     into another .txt file.
     Usage:
-    object = decompress('full/path/to/file/to/be/decompressed','path/to/store/decompressed_file/'[[[,limit,is_text,verbose]]])
+    object = decompress('full/path/to/file/to/be/decompressed','path/to/store/decompressed_file/'[[[[,limit,is_text,verbose,chunks]]]])
     limit is an integer which specifies the max size of the file to be decompressed. The default is 20MB.
     The limit can be changed but note that larger files take substantially large times(as of now).
     is_text(default=True) is to be set False iff this same argument was false when the file was compressed.

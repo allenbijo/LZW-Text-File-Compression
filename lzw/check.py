@@ -3,9 +3,9 @@ This python module is not to be directly imported in your
 application for compression or decompression purposes. This module
 simply provides helper functionality to the encode/decode process.
 For instructions on using the compression algorithm see the README file.
- The prime objective of this module is to perform quick sanity checks
- on the target file to be compressed/decompressed and thereby avoid any
- catastrophic runtime anamolies.
+The prime objective of this module is to perform quick sanity checks
+on the target file to be compressed/decompressed and thereby avoid any
+runtime anamolies.
 """
 
 import os

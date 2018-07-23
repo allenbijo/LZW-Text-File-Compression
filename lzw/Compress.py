@@ -8,7 +8,7 @@ class compress():
     """This class provides compression of an 'utf-8' encoded file. Please note that no
     other formats are supported and may lead to catastrophic errors.
     Usage:
-    obj = compress('full/path/to/input_file','path/for/storing/output_file'[[,limit,verbose])
+    obj = compress('full/path/to/input_file','path/for/storing/output_file'[[[[,limit,is_text,verbose,chunks]]]])
     limit is an integer which specifies the max input file size. The default is 20MB.
     The limit can be changed but note that larger files take terribly large times(as of now).
     is_text is to be set as False iff the file to be compressed is not a plain English text file.
