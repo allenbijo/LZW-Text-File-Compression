@@ -1,7 +1,7 @@
 from distutils.core import setup
 
 setup(name='lzw',
-      version='0.3',
+      version='0.3.1',
       description='utf-8 text file compression',
       author='Prathamesh Mandke',
       author_email='mandkepk97@gmail.com',
