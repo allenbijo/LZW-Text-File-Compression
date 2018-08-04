@@ -18,3 +18,11 @@ class sizeError(lzwExc):
 class DecompressFileError(lzwExc):
     def __init__(self,msg=''):
         self.msg = msg
+
+class UnicodeRangeError(lzwExc):
+    def __init__(self,max_sz):
+        self.msg = 'Allowed maximum unicode character size = '+str(max_sz)+'. Allowed minimum size = 256.'
+
+class InvalidEncoding(lzwExc):
+    def __init__(self):
+        self.msg = 'Allowed encodings are ascii_127 or ascii_255 or utf-8.'

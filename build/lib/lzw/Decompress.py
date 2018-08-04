@@ -8,8 +8,8 @@ class decompress():
     """This class provides functionality to decompress the file that was compressed by the
     (encode method of the) compress class of this package. Only .txt format files will be decompressed
     into another .txt file.
-    Usage:
-    object = decompress('full/path/to/file/to/be/decompressed','path/to/store/decompressed_file/'[[[,limit,is_text,verbose]]])
+    Usage: --> newww
+    object = decompress('full/path/to/file/to/be/decompressed','path/to/store/decompressed_file/'[[[[,limit,is_text,verbose,chunks]]]])
     limit is an integer which specifies the max size of the file to be decompressed. The default is 20MB.
     The limit can be changed but note that larger files take substantially large times(as of now).
     is_text(default=True) is to be set False iff this same argument was false when the file was compressed.
@@ -25,31 +25,43 @@ class decompress():
 
     Once initiated, call the decode method(without any arguments) on the object of this class to begin decompression.
     """
-    def __init__(self,compressed_file_path='',output_file_path='',limit=10000000,is_text=True,verbose=0,chunks=None):
+    def __init__(self,compressed_file_path='',output_file_path='',limit=20000000,encoding='ascii_127',max_utf_char=None,verbose=0,chunks=None):
         self.compressed_file_path = compressed_file_path
         self.output_file_path = output_file_path
         self.output_file_path = self.output_file_path if self.output_file_path[-1] == '/' else self.output_file_path+'/'
         self.sizeLimit = limit
-        self.is_text = is_text
+        self.encoding = encoding
+        self.max_utf_char = max_utf_char
+        if self.encoding is 'utf-8' and self.max_utf_char is None:
+            print('For utf-8 encoding max utf char is required')
+            exit(1)
         self.chunks = chunks
         self.verbose = verbose
         self.chunksize = 1
-        dec_check(infile=self.compressed_file_path,outpath=self.output_file_path,sLimit=self.sizeLimit)
+        dec_check(infile=self.compressed_file_path,outpath=self.output_file_path,sLimit=self.sizeLimit,max_unic=self.max_utf_char,enco=self.encoding)
 
     def decode(self):
         """See help(docstring) for class decompress."""
-        if self.is_text:
+        if self.encoding is 'ascii_127':
             dw_len = d.is_t_dec_len
             l_dec = d.text_lis.copy()
             d_dec = d.text_dict.copy()
             dword_size = d.is_t_dec_size
             dict_size = 128
-        else:
+        elif self.encoding is 'ascii_255':
             dw_len = d.dec_len
             l_dec = d.init_lis.copy()
             d_dec = d.init_dict.copy()
             dword_size = d.d_dec_size
             dict_size = 256
+        elif self.encoding == 'utf-8':
+            d.utf_8_trie(self.max_utf_char)
+            dw_len = d.unic_dec_len
+            l_dec = d.unic_list.copy()
+            d_dec = d.unic_dict.copy()
+            dword_size = d.unic_dec_size
+            dict_size = self.max_utf_char + 1
+            print(dw_len,dict_size,len(l_dec))
 
         inpfile = self.compressed_file_path
         outpath = self.output_file_path
@@ -126,7 +138,7 @@ class decompress():
                     if self.verbose == 2:
                         print("Decompressing...part {0}/{1} of input file: ".format(chunk+1,self.chunks),end='')
                         print("{:.2f}".format(ptr*100/data_len)+"% done")
-                    #print(int(s,2), dict_size)
+
                     if int(s,2) > (dict_size - 1):
                         l_dec.append(curr_phr+curr_phr[0])
                         dict_size += 1

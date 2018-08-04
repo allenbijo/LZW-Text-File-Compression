@@ -3,10 +3,11 @@ import lzw.dicts as d
 from lzw.check import enc_check
 import time
 from datetime import timedelta
+from sys import exit
 
 class compress():
     """This class provides compression of an 'utf-8' encoded file. Please note that no
-    other formats are supported and may lead to catastrophic errors.
+    other encoding formats are supported and may lead to catastrophic errors.
     Usage:
     obj = compress('full/path/to/input_file','path/for/storing/output_file'[[[[,limit,is_text,verbose,chunks]]]])
     limit is an integer which specifies the max input file size. The default is 20MB.
@@ -25,13 +26,17 @@ class compress():
 
     Once instantiated, call the encode method(without any arguments) on the object to begin compression.
     """
-    def __init__(self,input_file_path='',output_file_path='',limit=20000000,is_text=True,verbose=0,chunks=None):
+    def __init__(self,input_file_path='',output_file_path='',limit=20000000,encoding='ascii_127',max_utf_char=None, verbose=0,chunks=None):
         self.input_file_path = input_file_path
         self.output_file_path = output_file_path
         self.sizeLimit = limit
-        self.is_text = is_text
+        self.encoding = encoding
+        self.max_utf_char = max_utf_char
+        if self.encoding is 'utf-8' and self.max_utf_char is None:
+            print('For utf-8 encoding max utf char is required')
+            exit(1)
         self.verbose = verbose
-        enc_check(infile=self.input_file_path,outpath=self.output_file_path,sLimit=self.sizeLimit)
+        enc_check(infile=self.input_file_path,outpath=self.output_file_path,sLimit=self.sizeLimit, max_unic=self.max_utf_char,enco=self.encoding)
         infilesize = os.stat(self.input_file_path).st_size
         self.chunks = chunks
         if not self.chunks or self.chunks > 100:
@@ -72,16 +77,23 @@ class compress():
             s1 = str()
             skip  = False
             flag = bool()
-            if self.is_text:
+            if self.encoding is 'ascii_127':
                 w_len = d.is_t_enc_len
                 root = d.ascii_root
                 address = 128
                 word_size = d.is_t_enc_size
-            else:
+            elif self.encoding is 'ascii_255':
                 w_len = d.enc_len
                 root = d.ex_ascii_root
                 address = 256
                 word_size = d.d_enc_size
+            elif self.encoding == 'utf-8':
+                d.utf_8_trie(self.max_utf_char)
+                w_len = d.unic_enc_len
+                root = d.unic_root
+                address = self.max_utf_char + 1
+                word_size = d.unic_enc_size
+
             m = 1
             for chunk in range(self.chunks):
                 if chunk == (self.chunks-1):
@@ -122,6 +134,7 @@ class compress():
 
                     flag = False
                     match = ''
+                    val = ''
                     for i in range(len(s1),0,-1):
                         match_node = root.find(s1[:i])
                         if match_node:
@@ -130,7 +143,9 @@ class compress():
                                 val = bin(match_node.addr)
                                 flag = True  #Match found!
                                 break
-
+                    if not val:
+                        print('Invalid character present in file. Char is one of '+s1)
+                        exit(1)
                     if len(val[2:]) < w_len:
                         for j in range(w_len - len(val[2:])):
                             bit_stream.append('0')
