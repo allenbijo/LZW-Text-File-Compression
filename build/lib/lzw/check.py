@@ -45,7 +45,7 @@ def com_checks(infile,outpath,sLimit=10000000,max_unic=None,enco=None):
             pass
         else:
             raise InvalidEncoding()
-    if max_unic and (max_unic > maxunicode or max_unic < 256):
+    if max_unic and (max_unic > maxunicode):
         raise UnicodeRangeError(max_unic)
     if not os.access(outpath,os.F_OK):
         raise NoAccess(outpath)

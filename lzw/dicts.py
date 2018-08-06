@@ -14,9 +14,9 @@ unic_root = trie()
 unic_list = []
 unic_dict = dict()
 unic_enc_size = list()
-unic_dec_size = list()
+#unic_dec_size = list()
 unic_enc_len = int()
-unic_dec_len = int()
+#unic_dec_len = int()
 def utf_8_trie(max_char):
     global unic_root
     global unic_list
@@ -30,10 +30,10 @@ def utf_8_trie(max_char):
     unic_list = [chr(a) for a in range(max_char+1)]
     unic_dict = {unic_list[i]:i for i in range(max_char+1)}
     enc = int(log2(max_char))
-    unic_enc_size = [2**i for i in range(enc+1,enc+31)]
-    unic_dec_size = [(2**i)-1 for i in range(enc+1,enc+31)]
+    unic_enc_size = [2**i for i in range(enc,enc+31)]
+    #unic_dec_size = [(2**i) for i in range(enc+1,enc+31)]
     unic_enc_len = enc + 1
-    unic_dec_len = enc + 2
+    #unic_dec_len = enc + 1
 
 
 init_lis = [chr(a) for a in range(256)]
@@ -43,13 +43,15 @@ text_lis = [chr(a) for a in range(128)]
 text_dict = {text_lis[i]:i for i in range(128)}
 
 d_enc_size = [2**i for i in range(8,25)]
-d_dec_size = [(2**i)-1 for i in range(8,25)]
+#d_dec_size = [(2**i)-1 for i in range(8,25)]
+#d_dec_size = [(2**i) for i in range(8,25)]
 
 is_t_enc_size = [2**i for i in range(7,25)]
-is_t_dec_size = [(2**i)-1 for i in range(7,25)]
+#is_t_dec_size = [(2**i)-1 for i in range(7,25)]
+#is_t_dec_size = [(2**i) for i in range(7,25)]
 
 is_t_enc_len = 7
-is_t_dec_len = 8
+#is_t_dec_len = 7
 
 enc_len = 8
-dec_len = 9
+#dec_len = 8

@@ -24,5 +24,5 @@ class UnicodeRangeError(lzwExc):
         self.msg = 'Allowed maximum unicode character size = '+str(max_sz)+'. Allowed minimum size = 256.'
 
 class InvalidEncoding(lzwExc):
-    def __init__(self):
+    def __init__(self,msg=''):
         self.msg = 'Allowed encodings are ascii_127 or ascii_255 or utf-8.'

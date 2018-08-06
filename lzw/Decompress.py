@@ -8,7 +8,7 @@ class decompress():
     """This class provides functionality to decompress the file that was compressed by the
     (encode method of the) compress class of this package. Only .txt format files will be decompressed
     into another .txt file.
-    Usage: --> newww
+    Usage: --> mod
     object = decompress('full/path/to/file/to/be/decompressed','path/to/store/decompressed_file/'[[[[,limit,is_text,verbose,chunks]]]])
     limit is an integer which specifies the max size of the file to be decompressed. The default is 20MB.
     The limit can be changed but note that larger files take substantially large times(as of now).
@@ -43,26 +43,25 @@ class decompress():
     def decode(self):
         """See help(docstring) for class decompress."""
         if self.encoding is 'ascii_127':
-            dw_len = d.is_t_dec_len
+            dw_len = d.is_t_enc_len
             l_dec = d.text_lis.copy()
             d_dec = d.text_dict.copy()
-            dword_size = d.is_t_dec_size
+            dword_size = d.is_t_enc_size
             dict_size = 128
         elif self.encoding is 'ascii_255':
-            dw_len = d.dec_len
+            dw_len = d.enc_len
             l_dec = d.init_lis.copy()
             d_dec = d.init_dict.copy()
-            dword_size = d.d_dec_size
+            dword_size = d.d_enc_size
             dict_size = 256
         elif self.encoding == 'utf-8':
             d.utf_8_trie(self.max_utf_char)
-            dw_len = d.unic_dec_len
+            dw_len = d.unic_enc_len
             l_dec = d.unic_list.copy()
             d_dec = d.unic_dict.copy()
-            dword_size = d.unic_dec_size
+            dword_size = d.unic_enc_size
             dict_size = self.max_utf_char + 1
-            print(dw_len,dict_size,len(l_dec))
-
+            
         inpfile = self.compressed_file_path
         outpath = self.output_file_path
         s = ''
@@ -96,7 +95,6 @@ class decompress():
             print("Beginning to decompress...")
             for chunk in range(self.chunks):
                 if chunk == (self.chunks-1):
-                    st = time.monotonic()
                     for _ in range(self.chunksize+(fsize%self.chunksize)):
                         bts = format(int.from_bytes(f.read(1),'little'),'08b')
                         for b_count in list(bts):
@@ -107,9 +105,6 @@ class decompress():
                         dat = list(bts)
                         for i in dat[8-frem:]:
                             data.append(i)
-                    end_t = time.monotonic()
-                    print("Pre process time: ",end='')
-                    print(timedelta(seconds=end_t -st))
                 else:
                     for _ in range(self.chunksize):
                         bts = format(int.from_bytes(f.read(1),'little'),'08b')

@@ -111,8 +111,8 @@ class compress():
                     st = time.monotonic()
                 lss = len(sym_stream)
                 while True:
-                    if address in word_size:
-                        w_len += 1
+                    #if address in word_size:
+                        #w_len += 1
 
                     if self.verbose == 2:
                         print("Proccessing...part {0}/{1} of input file: ".format(chunk+1,self.chunks),end='')
@@ -144,7 +144,11 @@ class compress():
                                 flag = True  #Match found!
                                 break
                     if not val:
-                        print('Invalid character present in file. Char is one of '+s1)
+                        print("A character beyond the range of the encoding was encountered in the string:")
+                        for _ in s1:
+                            print(ord(_),_)
+                        print("If the utf-8 value of a character is beyond 255 \
+                        then change encoding to utf-8 and set max_utf_char suitably.")
                         exit(1)
                     if len(val[2:]) < w_len:
                         for j in range(w_len - len(val[2:])):
@@ -173,6 +177,8 @@ class compress():
 
                     root.insert(match,address)
                     address += 1
+                    if address-1 in word_size:
+                        w_len += 1
 
                 if self.verbose == 1:
                     end_t = time.monotonic()
