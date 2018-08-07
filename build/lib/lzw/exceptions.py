@@ -8,7 +8,7 @@ class NoAccess(lzwExc):
 
 class LargeFile(lzwExc):
     def __init__(self):
-        self.msg = "Files larger than 12MB may take substantial amount of time for compression.\
+        self.msg = "Files larger than 30MB may take substantial amount of time for compression.\
          Do you want to proceed Y/N ?"
 
 class sizeError(lzwExc):
@@ -21,7 +21,7 @@ class DecompressFileError(lzwExc):
 
 class UnicodeRangeError(lzwExc):
     def __init__(self,max_sz):
-        self.msg = 'Allowed maximum unicode character size = '+str(max_sz)+'. Allowed minimum size = 256.'
+        self.msg = 'Allowed maximum unicode character size = '+str(max_sz)+'. Allowed minimum size = 0.'
 
 class InvalidEncoding(lzwExc):
     def __init__(self,msg=''):

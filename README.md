@@ -14,9 +14,11 @@ For information on virtual environments see [this](https://virtualenv.pypa.io/).
 
 Open a new terminal window(recommended).
 
-So, after cloning the repository or downloading the the source distribution tarball and unzipping, cd into the folder of the project and run the following command in the terminal:
+After cloning the repository or downloading the the source distribution tarball and unzipping, cd into the folder of the project and run the following command in the terminal:
 
-``python3 setup.py install``
+```
+python3 setup.py install
+```
 
 This completes the installation of the package. Now its time to use this package to achieve some compression.
 
@@ -28,28 +30,38 @@ There are **2 major classes** in the lzw package that form the functional API. F
 ## Compression
 First import the compress class as follows:
 
-``from lzw.Compress import compress as comp``
+```
+from lzw.Compress import compress as comp
+```
 
 Then create a compress object as follows:
 
-``c = comp('/path/to/input/file','/desired/path/for/output/file'[[[[,limit,is_text,verbose,chunks]]]])``
+```
+c = comp('/path/to/input/file','/desired/path/for/output/file'[[[[,limit,encoding,max_utf_char,verbose,chunks]]]])
+```
 
 **Note**: The input file must be in the utf-8 encoding format. Provide entire path as a string input to the class. Provide the path where the compressed file is to reside. Do not provide a filename as the output path. The name of the compressed file will default to a "\_compressed.txt" appended to your input file's name.
 
-**_limit_**(default=20000000,type=int) is an optional argument which specifies the max size of the file to be compressed. The default is 20MB. The limit can be changed but note that larger files take substantially large times(as of now).
+**limit**: (default=20000000,type=int) is an optional argument which specifies the max size of the file to be compressed. The default is 20MB. The limit can be changed but note that larger files take substantially large times(as of now).
 
-**_is_text_**(default=True) is to be set as False iff the file to be compressed is not a plain English text file. Basically, the program uses a initial dictionary of ASCII chars 0-255 if is_text=False. is_text is True by default, and the initial dictionary contains ASCII chars 0-127.
+**encoding**: (type=str,default=ascii_255) This is arguably the most important argument so far the
+compression efficiency and time are concerned. There are 3 options for this argument: 'ascii_255',
+ascii_127' and 'utf-8'. ascii_127 and ascii_255 are chosen when the file contains characters within the first 256 and 128 utf-8(or ascii) charset respectively. 'utf-8' is a generic option and requires the max_utf_char(int) value to be specified. The algorithm then uses an initial dictionary of characters upto and including the max_utf_char character.
 
-**_verbose_**(default=0,type=int) input, if set to 2, the program displays percent execution per chunk of input processed.
+**max_utf_char**: (type=int,default=None) Only applicable(and required) if encoding='utf-8'. You will achieve maximum compression in minimum time if max_utf_char is set to not more than the maximum utf-8 value among all characters present in your file. Maximum value for this argument = os.maxunicode.
+
+**verbose**: (default=0,type=int) input, if set to 2, the program displays percent execution per chunk of input processed.
 verbose=1 shows the execution time per chunk of input file processed.
 Note: The verbose=2 option may generate large amounts of output on stdout and is 0
 by default.
 
-**_chunks_**(default=None,type=int) is an integer type argument used to specify the number of chunks in which the file is divided in during compression. By default, the program adoptively decides this number. chunks are useful for very large files as a single chunk is loaded into RAM during compression. The maximum value allowed is 100 chunks.
+**chunks**: (default=None,type=int) is an integer type argument used to specify the number of chunks in which the file is divided in during compression. By default, the program adoptively decides this number. chunks are useful for very large files as a single chunk is loaded into RAM during compression. The maximum value allowed is 100 chunks.
 
 After the command runs successfully, the compress object is ready. The actual compresseion is triggered by calling the **encode** method on this object as follows:
 
-``c.encode()  ``
+```
+c.encode()
+```
 
 Depending on the file size, this may take quite a while. The status is shown in the terminal window.
 Once done, a new file is created in the path you mentioned which you can verify is decently compressed to about a third of its original size provided the original file was not trivially small.
@@ -60,25 +72,33 @@ The steps here are similar to that of compression.
 
 Firstly, import the decompress class as follows:
 
-``from lzw.Decompress import decompress as dec``
+```
+from lzw.Decompress import decompress as dec
+````
 
 Next, create a decompress object as follows:
 
-``d = dec('/path/to/compressed/file','/desired/path/for/decompressed/file'[[[[,limit,is_text,verbose,chunks]]]])``
+```
+d = dec('/path/to/compressed/file','/desired/path/for/decompressed/file'[[[[,limit,encoding,max_utf_char,verbose,chunks]]]])
+```
 
 **Note**: The first argument is the full path of the file to be decompressed. This file must have a .txt extension and must be a one generated by the compress class of this package. The desired path for the decompressed file is the second argument. Do not provide a file name here and give a full qualified path. The name of the decompressed file will default to a "\_decompressed.txt" appended to your input file's name.
 
-**_limit_** is an optional(integer) argument which specifies the max size of the file to be decompressed. The default is 20MB. The limit can be changed but note that larger files take substantially large times(as of now).
+**limit**: is an optional(integer) argument which specifies the max size of the file to be decompressed. The default is 20MB. The limit can be changed but note that larger files take substantially large times(as of now).
 
-**_is_text_**(default=True) is to be set False iff this same argument was False when the file was compressed.
+**encoding**:(type=str,default=ascii_255) The value here must be the same as that used while compressing the file.
 
-**_verbose_**(default=0) is similar to the argument to lzw.Compress.compress.
+**max_utf_char**: (type=int,default=None) This parameter is required iff encoding='utf-8' and must be the same as that used while compression.
 
-**_chunks_**(default=None,type=int) is an integer type argument used to specify the number of chunks in which the file is divided in during decompression. By default, the program adoptively decides this number. chunks are useful for very large files as a single chunk is loaded into RAM during decompression. The maximum value allowed is 100 chunks.
+**verbose**(type=int,default=0) is similar to the argument to lzw.Compress.compress.
+
+**chunks**: (default=None,type=int) is an integer type argument used to specify the number of chunks in which the file is divided in during decompression. By default, the program adoptively decides this number. chunks are useful for very large files as a single chunk is loaded into RAM during decompression. The maximum value allowed is 100 chunks.
 
 After the command runs successfully, the decompress object is ready. The actual decompression is triggered by calling the *decode* method on this object as follows:
 
-``d.decode()  ``
+```
+d.decode()
+```
 
 Depending on the file size, this may take quite a while. The status is shown in the terminal window.
 Once done, a new file is created in the path you mentioned which must be the same as the input file.

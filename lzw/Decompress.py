@@ -8,16 +8,21 @@ class decompress():
     """This class provides functionality to decompress the file that was compressed by the
     (encode method of the) compress class of this package. Only .txt format files will be decompressed
     into another .txt file.
-    Usage: --> mod
-    object = decompress('full/path/to/file/to/be/decompressed','path/to/store/decompressed_file/'[[[[,limit,is_text,verbose,chunks]]]])
+    Usage:
+    object = decompress('full/path/to/file/to/be/decompressed','path/to/store/decompressed_file/'[[[[,limit,encoding,max_utf_char,verbose,chunks]]]])
     limit is an integer which specifies the max size of the file to be decompressed. The default is 20MB.
     The limit can be changed but note that larger files take substantially large times(as of now).
-    is_text(default=True) is to be set False iff this same argument was false when the file was compressed.
-    See docstring of lzw.Comrpess.compress for details on is_text.
+
+    encoding(default=ascii_255) is the encoding used while compression of the original file.
+    See docstring for lzw.Compress.compress for details.
+    max_utf_char(default=None) is to be used only for encoding='utf-8'. This value must match
+    the one used for compressing the file.
+
     The verbose input, if set to 2, the program displays percent execution per chunk.
     verbose=1 shows the execution time per chunk of input file processed.
     Note: The verbose=2 option may generate large amounts of output on stdout and is 0
     by default.
+
     chunks(default=None) is an integer type argument used to specify the number of chunks in which the file is divided in
     during decompression. By default, the program adoptively decides this number. chunks are useful
     for very large files as a single chunk is loaded into RAM during decompression. The maximum
@@ -25,7 +30,7 @@ class decompress():
 
     Once initiated, call the decode method(without any arguments) on the object of this class to begin decompression.
     """
-    def __init__(self,compressed_file_path='',output_file_path='',limit=20000000,encoding='ascii_127',max_utf_char=None,verbose=0,chunks=None):
+    def __init__(self,compressed_file_path='',output_file_path='',limit=20000000,encoding='ascii_255',max_utf_char=None,verbose=0,chunks=None):
         self.compressed_file_path = compressed_file_path
         self.output_file_path = output_file_path
         self.output_file_path = self.output_file_path if self.output_file_path[-1] == '/' else self.output_file_path+'/'
@@ -61,7 +66,7 @@ class decompress():
             d_dec = d.unic_dict.copy()
             dword_size = d.unic_enc_size
             dict_size = self.max_utf_char + 1
-            
+
         inpfile = self.compressed_file_path
         outpath = self.output_file_path
         s = ''
@@ -79,11 +84,11 @@ class decompress():
             btsize = (8*fsize)+frem
 
             if not self.chunks or self.chunks > 100:
-                if fsize <= 100000:
+                if fsize <= 1000000:
                     self.chunks = 1
-                elif fsize > 100000 and fsize <= 1000000:
+                elif fsize > 1000000 and fsize <= 4000000:
                     self.chunks = 5
-                elif fsize > 1000000 and fsize <= 10000000:
+                elif fsize > 4000000 and fsize <= 10000000:
                     self.chunks = 10
                 elif fsize > 10000000:
                     self.chunks = 15
@@ -158,3 +163,7 @@ class decompress():
         del l_dec
         del d_dec
         del data
+        del dw_len
+        del dict_size
+        del ptr
+        del dword_size

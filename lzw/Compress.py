@@ -9,16 +9,21 @@ class compress():
     """This class provides compression of an 'utf-8' encoded file. Please note that no
     other encoding formats are supported and may lead to catastrophic errors.
     Usage:
-    obj = compress('full/path/to/input_file','path/for/storing/output_file'[[[[,limit,is_text,verbose,chunks]]]])
+    obj = compress('full/path/to/input_file','path/for/storing/output_file'[[[[,limit,encoding,max_utf_char,verbose,chunks]]]])
     limit is an integer which specifies the max input file size. The default is 20MB.
     The limit can be changed but note that larger files take terribly large times(as of now).
-    is_text is to be set as False iff the file to be compressed is not a plain English text file.
-    Basically, the program uses a initial dictionary of ASCII chars 0-255 if is_text=False.
-    is_text is True by default, and the initial dictionary contains ASCII chars 0-127.
+
+    encoding(default=ascii_255) is used to select the encoding of the input file.
+    There are 3 options: 'ascii_255','ascii_127' and 'utf-8'. The utf-8 option if selected
+    also requires the max_utf_char to be set to the max utf-8(int) value of all characters
+    present in the file.
+    Note: This same value for both encoding and max_utf_char are to be used for decompression.
+
     The verbose input, if set to 2, the program displays percent execution per chunk.
     verbose=1 shows the execution time per chunk of input file processed.
     Note: The verbose=2 option may generate large amounts of output on stdout and is 0
     by default.
+
     chunks(default=None) is an integer type argument used to specify the number of chunks in which the file is divided in
     during compression. By default, the program adoptively decides this number. chunks are useful
     for very large files as a single chunk is loaded into RAM during compression. The maximum
@@ -40,16 +45,16 @@ class compress():
         infilesize = os.stat(self.input_file_path).st_size
         self.chunks = chunks
         if not self.chunks or self.chunks > 100:
-            if infilesize <= 100000:
+            if infilesize <= 1000000:
                 self.chunks = 1;
-            elif infilesize <= 4000000 and infilesize > 100000:
-                self.chunks = 4;
-            elif infilesize > 4000000 and infilesize <= 10000000:
-                self.chunks = 6;
-            elif infilesize > 10000000 and infilesize <= 20000000:
-                self.chunks = 8;
-            elif infilesize > 20000000:
+            elif infilesize <= 6000000 and infilesize > 1000000:
+                self.chunks = 5;
+            elif infilesize > 6000000 and infilesize <= 10000000:
                 self.chunks = 10;
+            elif infilesize > 10000000 and infilesize <= 20000000:
+                self.chunks = 12;
+            elif infilesize > 20000000:
+                self.chunks = 15;
 
         self.chunksize = infilesize//self.chunks
 
@@ -202,5 +207,9 @@ class compress():
                             bit_stream = bit_stream[bptr+8:]
 
         root.self_destruct()
+        del root
         del bit_stream
         del sym_stream
+        del word_size
+        del w_len
+        del ssptr
