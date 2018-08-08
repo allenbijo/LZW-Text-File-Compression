@@ -2,6 +2,7 @@ import os
 from lzw.check import dec_check
 import lzw.dicts as d
 import time
+from math import log2
 from datetime import timedelta
 
 class decompress():
@@ -45,9 +46,30 @@ class decompress():
         self.chunksize = 1
         dec_check(infile=self.compressed_file_path,outpath=self.output_file_path,sLimit=self.sizeLimit,max_unic=self.max_utf_char,enco=self.encoding)
 
+        if self.encoding is 'ascii_127':
+            self.__dw_len = d.is_t_enc_len
+            self.__l_dec = d.text_lis.copy()
+            self.__d_dec = d.text_dict.copy()
+            self.__dword_size = d.is_t_enc_size
+            self.__dict_size = 128
+        elif self.encoding is 'ascii_255':
+            self.__dw_len = d.enc_len
+            self.__l_dec = d.init_lis.copy()
+            self.__d_dec = d.init_dict.copy()
+            self.__dword_size = d.d_enc_size
+            self.__dict_size = 256
+        elif self.encoding == 'utf-8':
+            enc = int(log2(max_char))
+            self.__dw_len = enc + 1
+            self.__l_dec = [chr(a) for a in range(max_char+1)]
+            self.__d_dec = {l_dec[i]:i for i in range(max_char+1)}
+            self.__dword_size = [2**i for i in range(enc,enc+31)]
+            self.__dict_size = self.max_utf_char + 1
+
     def decode(self):
         """See help(docstring) for class decompress."""
-        if self.encoding is 'ascii_127':
+
+        '''if self.encoding is 'ascii_127':
             dw_len = d.is_t_enc_len
             l_dec = d.text_lis.copy()
             d_dec = d.text_dict.copy()
@@ -60,12 +82,18 @@ class decompress():
             dword_size = d.d_enc_size
             dict_size = 256
         elif self.encoding == 'utf-8':
-            d.utf_8_trie(self.max_utf_char)
-            dw_len = d.unic_enc_len
-            l_dec = d.unic_list.copy()
-            d_dec = d.unic_dict.copy()
-            dword_size = d.unic_enc_size
+            enc = int(log2(max_char))
+            dw_len = enc + 1
+            l_dec = [chr(a) for a in range(max_char+1)]
+            d_dec = {l_dec[i]:i for i in range(max_char+1)}
+            dword_size = [2**i for i in range(enc,enc+31)]
             dict_size = self.max_utf_char + 1
+'''
+        dw_len = self.__dw_len
+        l_dec = self.__l_dec
+        d_dec = self.__d_dec
+        dword_size = self.__dword_size
+        dict_size = self.__dict_size
 
         inpfile = self.compressed_file_path
         outpath = self.output_file_path
@@ -167,3 +195,8 @@ class decompress():
         del dict_size
         del ptr
         del dword_size
+        del self.__l_dec
+        del self.__d_dec
+        del self.__dw_len
+        del self.__dict_size
+        del self.__dword_size

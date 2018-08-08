@@ -11,15 +11,12 @@ class trie():
         for index,letter in enumerate(word):
             if letter in node.next.keys():
                 node = node.next[letter]
-                if index == len(word) - 1:
-                    node.value = word
-                    node.addr = addr
             else:
                 node.next[letter] = trie()
                 node = node.next[letter]
-                if index == len(word) - 1:
-                    node.value = word
-                    node.addr = addr
+            if index == len(word) - 1:
+                node.value = word
+                node.addr = addr
 
     def find(self, query=str()):
         node = self
@@ -31,14 +28,3 @@ class trie():
                     return node
             else:
                 return None
-
-    def self_destruct(self):
-        node = self
-
-        if node == None:
-            return
-
-        for i in node.next.keys():
-            node.next[i].self_destruct()
-
-        del node

@@ -1,6 +1,8 @@
 import os
 import lzw.dicts as d
 from lzw.check import enc_check
+from lzw.trie import trie
+from math import log2
 import time
 from datetime import timedelta
 from sys import exit
@@ -43,6 +45,29 @@ class compress():
         self.verbose = verbose
         enc_check(infile=self.input_file_path,outpath=self.output_file_path,sLimit=self.sizeLimit, max_unic=self.max_utf_char,enco=self.encoding)
         infilesize = os.stat(self.input_file_path).st_size
+        if self.encoding is 'ascii_127':
+            self.__w_len = d.is_t_enc_len
+            self.__root = trie()
+            for i in range(128):
+                self.__root.insert(chr(i),addr=i)
+            self.__address = 128
+            self.__self.__word_size = d.is_t_enc_size
+        elif self.encoding is 'ascii_255':
+            self.__w_len = d.enc_len
+            self.__root = trie()
+            for i in range(256):
+                self.__root.insert(chr(i),addr=i)
+            self.__address = 256
+            self.__word_size = d.d_enc_size
+        elif self.encoding == 'utf-8':
+            enc = int(log2(max_char))
+            self.__w_len = enc + 1
+            self.__root = trie()
+            for i in range(self.max_utf_char + 1):
+                self.__root.insert(chr(i),addr=i)
+            self.__address = self.max_utf_char + 1
+            self.__self.__word_size = [2**i for i in range(enc,enc+31)]
+
         self.chunks = chunks
         if not self.chunks or self.chunks > 100:
             if infilesize <= 1000000:
@@ -82,24 +107,36 @@ class compress():
             s1 = str()
             skip  = False
             flag = bool()
+            '''
             if self.encoding is 'ascii_127':
                 w_len = d.is_t_enc_len
-                root = d.ascii_root
+                root = trie()
+                for i in range(128):
+                    root.insert(chr(i),addr=i)
                 address = 128
                 word_size = d.is_t_enc_size
             elif self.encoding is 'ascii_255':
                 w_len = d.enc_len
-                root = d.ex_ascii_root
+                root = trie()
+                for i in range(256):
+                    root.insert(chr(i),addr=i)
                 address = 256
                 word_size = d.d_enc_size
             elif self.encoding == 'utf-8':
-                d.utf_8_trie(self.max_utf_char)
-                w_len = d.unic_enc_len
-                root = d.unic_root
+                enc = int(log2(max_char))
+                w_len = enc + 1
+                root = trie()
+                for i in range(self.max_utf_char + 1):
+                    root.insert(chr(i),addr=i)
                 address = self.max_utf_char + 1
-                word_size = d.unic_enc_size
-
+                word_size = [2**i for i in range(enc,enc+31)]
+'''
+            w_len = self.__w_len
+            root = self.__root
+            address = self.__address
+            word_size = self.__word_size
             m = 1
+            print("Processing file in {0} chunks of {1}bytes each.".format(self.chunks,self.chunksize))
             for chunk in range(self.chunks):
                 if chunk == (self.chunks-1):
                     sym_stream = sym_stream[ssptr:] + fin.read().decode('utf-8')
@@ -111,7 +148,7 @@ class compress():
                     ssptr = 0
 
                 if self.verbose in [0,1]:
-                    print("Processing file in chunks of {0}bytes. Working on chunk{1}/{2}".format(self.chunksize,chunk+1,self.chunks))
+                    print("Working on chunk{0}/{1}".format(chunk+1,self.chunks))
                 if self.verbose == 1:
                     st = time.monotonic()
                 lss = len(sym_stream)
@@ -187,7 +224,7 @@ class compress():
 
                 if self.verbose == 1:
                     end_t = time.monotonic()
-                    print("Chunk {0}/{1}: Execution time: ".format(chunk+1,self.chunks),end='')
+                    print("Chunk {0}/{1} done: Execution time: ".format(chunk+1,self.chunks),end='')
                     print(timedelta(seconds=end_t - st))
                 lbs = len(bit_stream)
                 if lbs:
@@ -206,8 +243,10 @@ class compress():
                         else:
                             bit_stream = bit_stream[bptr+8:]
 
-        root.self_destruct()
         del root
+        del self.__root
+        del self.__word_size
+        del self.__w_len
         del bit_stream
         del sym_stream
         del word_size

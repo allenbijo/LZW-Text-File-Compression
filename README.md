@@ -104,6 +104,11 @@ Depending on the file size, this may take quite a while. The status is shown in 
 Once done, a new file is created in the path you mentioned which must be the same as the input file.
 
 **Note**: The default extension for the decompressed file is *.txt*. You can suitably rename it to your desired format.
+For maximum compression and minimal execution time, use the encoding='utf-8' option and provide the max_utf_char argument equal to the maximum of the utf-8(int) values of all characters in the file.
+This gives both maximum compression in minimum time as the initial dictionary is small in size.
+In case you do not know the characters that will be present in the file, assume a range and choose the max_utf_char value in its ballpark. If a character which has its utf-8 value greater than the one you mentioned, an error shall be raised during execution.
+Note that the LZW algorithm iterates over your file just(and exactly) once while compression.
+Also, remember to use the same set of arguments for the decompression object for faithful results.
 
 
 # Author
