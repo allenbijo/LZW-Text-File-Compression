@@ -107,30 +107,7 @@ class compress():
             s1 = str()
             skip  = False
             flag = bool()
-            '''
-            if self.encoding is 'ascii_127':
-                w_len = d.is_t_enc_len
-                root = trie()
-                for i in range(128):
-                    root.insert(chr(i),addr=i)
-                address = 128
-                word_size = d.is_t_enc_size
-            elif self.encoding is 'ascii_255':
-                w_len = d.enc_len
-                root = trie()
-                for i in range(256):
-                    root.insert(chr(i),addr=i)
-                address = 256
-                word_size = d.d_enc_size
-            elif self.encoding == 'utf-8':
-                enc = int(log2(max_char))
-                w_len = enc + 1
-                root = trie()
-                for i in range(self.max_utf_char + 1):
-                    root.insert(chr(i),addr=i)
-                address = self.max_utf_char + 1
-                word_size = [2**i for i in range(enc,enc+31)]
-'''
+
             w_len = self.__w_len
             root = self.__root
             address = self.__address
