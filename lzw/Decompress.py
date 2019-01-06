@@ -62,7 +62,7 @@ class decompress():
             enc = int(log2(self.max_utf_char))
             self.__dw_len = enc + 1
             self.__l_dec = [chr(a) for a in range(self.max_utf_char+1)]
-            self.__d_dec = {l_dec[i]:i for i in range(self.max_utf_char+1)}
+            self.__d_dec = {self.__l_dec[i]:i for i in range(self.max_utf_char+1)}
             self.__dword_size = [2**i for i in range(enc,enc+31)]
             self.__dict_size = self.max_utf_char + 1
 
