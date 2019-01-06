@@ -51,7 +51,7 @@ class compress():
             for i in range(128):
                 self.__root.insert(chr(i),addr=i)
             self.__address = 128
-            self.__self.__word_size = d.is_t_enc_size
+            self.__word_size = d.is_t_enc_size
         elif self.encoding is 'ascii_255':
             self.__w_len = d.enc_len
             self.__root = trie()
@@ -66,7 +66,7 @@ class compress():
             for i in range(self.max_utf_char + 1):
                 self.__root.insert(chr(i),addr=i)
             self.__address = self.max_utf_char + 1
-            self.__self.__word_size = [2**i for i in range(enc,enc+31)]
+            self.__word_size = [2**i for i in range(enc,enc+31)]
 
         self.chunks = chunks
         if not self.chunks or self.chunks > 100:
