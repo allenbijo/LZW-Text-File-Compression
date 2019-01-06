@@ -1,6 +1,6 @@
-# Project Title
+# LZW Compression
 
-Python(3) based implementation of a utf-8 encoded text file compression using the [Lempel-Ziv-Welch](https://en.wikipedia.org/wiki/Lempel%E2%80%93Ziv%E2%80%93Welch) text file compression algorithm.
+Python(3) based implementation of a utf-8 encoded text file compression using the [Lempel-Ziv-Welch](https://en.wikipedia.org/wiki/Lempel%E2%80%93Ziv%E2%80%93Welch) text file compression algorithm. The primary purpose is to tweak various parameters and see their effect on compression ratio and time.
 
 
 # Installing
