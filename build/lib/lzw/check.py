@@ -57,7 +57,7 @@ def com_checks(infile,outpath,sLimit=15000000,max_unic=None,enco=None):
         raise sizeError(sLimit,'File size is greater than ','. Currently unsupported due to very large execution time.')
 
     try:
-        if os.stat(infile).st_size > 30000000:
+        if os.stat(infile).st_size > 50000000:
             raise LargeFile
     except LargeFile as lf:
         y = str(input(lf.msg))

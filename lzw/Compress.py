@@ -166,7 +166,7 @@ class compress():
                         print("A character beyond the range of the encoding was encountered in the string:")
                         for _ in s1:
                             print(ord(_),_)
-                        print("If the utf-8 value of a character is beyond 255 \
+                        print("If the utf-8 value of a character is beyond limits \
                         then change encoding to utf-8 and set max_utf_char suitably.")
                         exit(1)
                     if len(val[2:]) < w_len:

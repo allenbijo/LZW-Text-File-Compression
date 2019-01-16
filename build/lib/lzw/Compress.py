@@ -33,14 +33,14 @@ class compress():
 
     Once instantiated, call the encode method(without any arguments) on the object to begin compression.
     """
-    def __init__(self,input_file_path='',output_file_path='',limit=20000000,encoding='ascii_127',max_utf_char=None, verbose=0,chunks=None):
+    def __init__(self,input_file_path='',output_file_path='',limit=20000000,encoding='ascii_255',max_utf_char=None, verbose=0,chunks=None):
         self.input_file_path = input_file_path
         self.output_file_path = output_file_path
         self.sizeLimit = limit
         self.encoding = encoding
         self.max_utf_char = max_utf_char
         if self.encoding is 'utf-8' and self.max_utf_char is None:
-            print('For utf-8 encoding max utf char is required')
+            print('For utf-8 encoding max_utf_char argument is required')
             exit(1)
         self.verbose = verbose
         enc_check(infile=self.input_file_path,outpath=self.output_file_path,sLimit=self.sizeLimit, max_unic=self.max_utf_char,enco=self.encoding)
@@ -51,7 +51,7 @@ class compress():
             for i in range(128):
                 self.__root.insert(chr(i),addr=i)
             self.__address = 128
-            self.__self.__word_size = d.is_t_enc_size
+            self.__word_size = d.is_t_enc_size
         elif self.encoding is 'ascii_255':
             self.__w_len = d.enc_len
             self.__root = trie()
@@ -60,13 +60,13 @@ class compress():
             self.__address = 256
             self.__word_size = d.d_enc_size
         elif self.encoding == 'utf-8':
-            enc = int(log2(max_char))
+            enc = int(log2(self.max_utf_char))
             self.__w_len = enc + 1
             self.__root = trie()
             for i in range(self.max_utf_char + 1):
                 self.__root.insert(chr(i),addr=i)
             self.__address = self.max_utf_char + 1
-            self.__self.__word_size = [2**i for i in range(enc,enc+31)]
+            self.__word_size = [2**i for i in range(enc,enc+31)]
 
         self.chunks = chunks
         if not self.chunks or self.chunks > 100:
@@ -107,30 +107,7 @@ class compress():
             s1 = str()
             skip  = False
             flag = bool()
-            '''
-            if self.encoding is 'ascii_127':
-                w_len = d.is_t_enc_len
-                root = trie()
-                for i in range(128):
-                    root.insert(chr(i),addr=i)
-                address = 128
-                word_size = d.is_t_enc_size
-            elif self.encoding is 'ascii_255':
-                w_len = d.enc_len
-                root = trie()
-                for i in range(256):
-                    root.insert(chr(i),addr=i)
-                address = 256
-                word_size = d.d_enc_size
-            elif self.encoding == 'utf-8':
-                enc = int(log2(max_char))
-                w_len = enc + 1
-                root = trie()
-                for i in range(self.max_utf_char + 1):
-                    root.insert(chr(i),addr=i)
-                address = self.max_utf_char + 1
-                word_size = [2**i for i in range(enc,enc+31)]
-'''
+
             w_len = self.__w_len
             root = self.__root
             address = self.__address
@@ -189,7 +166,7 @@ class compress():
                         print("A character beyond the range of the encoding was encountered in the string:")
                         for _ in s1:
                             print(ord(_),_)
-                        print("If the utf-8 value of a character is beyond 255 \
+                        print("If the utf-8 value of a character is beyond limits \
                         then change encoding to utf-8 and set max_utf_char suitably.")
                         exit(1)
                     if len(val[2:]) < w_len:
