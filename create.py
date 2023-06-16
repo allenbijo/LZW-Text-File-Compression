@@ -3,6 +3,8 @@ from lzw.Decompress import decompress as dec
 import time
 import os
 
+# test to check git
+
 for i in range(1, 4):
     inp = 'SampleTextFiles/words20000/file'+str(i)+'.txt'
     out = 'output/file'+str(i)+'_compressed.txt'
